@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int       @id
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  name           String?
+  email          String    @unique
+  hashedPassword String?
+  role           String    @default("USER")
+  sessions       Session[]
+  tokens         Token[]
+}
+
+model Session {
+  id                 Int       @id
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  expiresAt          DateTime?
+  handle             String    @unique
+  hashedSessionToken String?
+  antiCSRFToken      String?
+  publicData         String?
+  privateData        String?
+  userId             Int?
+  user               User?     @relation(fields: [userId], references: [id])
+}
+
+model Token {
+  id          Int      @id
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  hashedToken String
+  type        String
+  expiresAt   DateTime
+  sentTo      String
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@unique([hashedToken, type])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model cnae {
+  codigo    String?
+  descricao String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model empresa {
+  cnpj_basico                 String?
+  razao_social                String?
+  natureza_juridica           String?
+  qualificacao_responsavel    String?
+  capital_social              Float?
+  porte_empresa               String?
+  ente_federativo_responsavel String?
+
+  @@index([cnpj_basico], map: "empresa_cnpj")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model estabelecimento {
+  cnpj_basico                 String?
+  cnpj_ordem                  String?
+  cnpj_dv                     String?
+  identificador_matriz_filial String?
+  nome_fantasia               String?
+  situacao_cadastral          String?
+  data_situacao_cadastral     String?
+  motivo_situacao_cadastral   String?
+  nome_cidade_exterior        String?
+  pais                        String?
+  data_inicio_atividade       String?
+  cnae_fiscal_principal       String?
+  cnae_fiscal_secundaria      String?
+  tipo_logradouro             String?
+  logradouro                  String?
+  numero                      String?
+  complemento                 String?
+  bairro                      String?
+  cep                         String?
+  uf                          String?
+  municipio                   String?
+  ddd_1                       String?
+  telefone_1                  String?
+  ddd_2                       String?
+  telefone_2                  String?
+  ddd_fax                     String?
+  fax                         String?
+  correio_eletronico          String?
+  situacao_especial           String?
+  data_situacao_especial      String?
+
+  @@index([cnpj_basico], map: "estabelecimento_cnpj")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model moti {
+  codigo    String?
+  descricao String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model munic {
+  codigo    String?
+  descricao String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model natju {
+  codigo    String?
+  descricao String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model pais {
+  codigo    String?
+  descricao String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model quals {
+  codigo    String?
+  descricao String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model simples {
+  cnpj_basico           String?
+  opcao_pelo_simples    String?
+  data_opcao_simples    String?
+  data_exclusao_simples String?
+  opcao_mei             String?
+  data_opcao_mei        String?
+  data_exclusao_mei     String?
+
+  @@index([cnpj_basico], map: "simples_cnpj")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model socios {
+  cnpj_basico                      String?
+  identificador_socio              String?
+  nome_socio_razao_social          String?
+  cpf_cnpj_socio                   String?
+  qualificacao_socio               String?
+  data_entrada_sociedade           String?
+  pais                             String?
+  representante_legal              String?
+  nome_do_representante            String?
+  qualificacao_representante_legal String?
+  faixa_etaria                     String?
+
+  @@index([cnpj_basico], map: "socios_cnpj")
+  @@index([cpf_cnpj_socio], map: "socios_cpf")
+  @@ignore
+}
